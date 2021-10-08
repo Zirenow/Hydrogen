@@ -1,3 +1,6 @@
+mod menu_init;
+
 fn main() {
-    println!("This is working correctly");
+    menu_init::init_menu();
+
 }
