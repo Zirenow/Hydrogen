@@ -4,59 +4,77 @@ use tui::style::{Style,Color, Modifier};
 use tui::text::{Spans, Span};
 use tui::symbols;
 use crate::configuration;
-use sysinfo::{System, SystemExt, Disk};
+use sysinfo::{ProcessorExt,System, SystemExt, Disk};
 
 static MAGABYTE:u64=1024;
 pub fn text_tile()->Paragraph<'static>{
     let mut sys=System::new_all();
 
-    let blue_style=Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
-    let orange_style=Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD);
-    let usage= (sys.used_memory() /sys.total_memory()) as f64;
+    let blue_style=Style::default().fg(Color::Blue).add_modifier(Modifier::BOLD);
+    let magenta_style=Style::default().fg(Color::Magenta).add_modifier(Modifier::BOLD);
+    let cyan_style=Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
+    let light_magenta_style=Style::default().fg(Color::LightMagenta).add_modifier(Modifier::BOLD);
+
+    let usage= sys.used_memory();
+    let total=sys.total_memory();
+    sys.refresh_system();
+    let percent=usage/total;
+    println!("{}",percent);
     let os_block=vec![
         Spans::from(vec![
             Span::styled("OS type: ",blue_style),
-            Span::raw(format!("{}",sys.name().unwrap())),
+            Span::styled(format!("{}",sys.name().unwrap()),cyan_style),
         ]),
         Spans::from(vec![
-            Span::styled("Host name:: ",blue_style),
-            Span::raw(format!("{}",sys.host_name().unwrap())),
+            Span::styled("Host name: ",blue_style),
+            Span::styled(format!("{}",sys.host_name().unwrap()),cyan_style),
         ]),
         Spans::from(vec![
             Span::styled("Kernel version: ",blue_style),
-            Span::raw(format!("{}",sys.kernel_version().unwrap())),
+            Span::styled(format!("{}",sys.kernel_version().unwrap()),cyan_style),
         ]),
         Spans::from(vec![
             Span::styled("Uptime: ",blue_style),
-            Span::raw(format!("{} minutes",sys.uptime()/60)),
+            Span::styled(format!("{} minutes",sys.uptime()/60),cyan_style),
         ]),
         Spans::from(vec![
-            Span::styled("",orange_style),
+            Span::styled("",magenta_style),
         ]),
 
         Spans::from(vec![
-            Span::styled("Total Ram: ",orange_style),
-            Span::raw(format!("{} Mb",sys.total_memory() /MAGABYTE)),
+            Span::styled("Total Ram: ",magenta_style),
+            Span::styled(format!("{} Mb",sys.total_memory() /MAGABYTE),light_magenta_style),
         ]),
         Spans::from(vec![
-            Span::styled("Free Ram: ",orange_style),
-            Span::raw(format!("{} Mb",sys.free_memory() /MAGABYTE)),
+            Span::styled("Free Ram: ",magenta_style),
+            Span::styled(format!("{} Mb",sys.free_memory() /MAGABYTE),light_magenta_style),
         ]),
         Spans::from(vec![
-            Span::styled("Used Ram: ",orange_style),
-            Span::raw(format!("{} Mb",sys.used_memory() /MAGABYTE)),
+            Span::styled("Used Ram: ",magenta_style),
+            Span::styled(format!("{} Mb",sys.used_memory() /MAGABYTE),light_magenta_style),
         ]),
         Spans::from(vec![
-            Span::styled("Used Ram %: ",orange_style),
-            Span::raw(format!("{} %",usage)),
+            Span::styled("SWAP: ",magenta_style),
+            Span::styled(format!("{} Mb",sys.total_swap() /MAGABYTE),light_magenta_style),
         ]),
         Spans::from(vec![
-            Span::styled("SWAP: ",orange_style),
-            Span::raw(format!("{} Mb",sys.total_swap() /MAGABYTE)),
+            Span::styled("Used SWAP: ",magenta_style),
+            Span::styled(format!("{} Mb",sys.used_swap() /MAGABYTE),light_magenta_style)
         ]),
         Spans::from(vec![
-            Span::styled("Used SWAP: ",orange_style),
-            Span::raw(format!("{} Mb",sys.used_swap() /MAGABYTE)),
+            Span::styled("",magenta_style),
+        ]),
+        Spans::from(vec![
+            Span::styled("Logical CPU's: ",magenta_style),
+            Span::styled(format!("{}",sys.processors().len()),magenta_style)
+        ]),
+        Spans::from(vec![
+            Span::styled("Global CPU usage: ",magenta_style),
+            Span::styled(format!("{:.2} %",sys.global_processor_info().cpu_usage()),magenta_style)
+        ]),
+        Spans::from(vec![
+            Span::styled("Number of cores: ",magenta_style),
+            Span::styled(format!("{:?}",sys.physical_core_count().unwrap()),magenta_style)
         ]),
 
     ];
@@ -89,24 +107,8 @@ pub fn text_tile()->Paragraph<'static>{
 
 }
 pub fn ascii_tile()->Paragraph<'static>{
-    let text =
-    "\n\n\n\n\n
-    ,-~¨-``-¨-,           _,
-    /          / ;^-._...,¨/
-    /          / /         /
-    /          / /         /
-    /          / /         /
-    /,.-:''-,_ / /         /
-    _,.-:--._  ^ ^:-._ __../
-    /^         / /¨:.._¨__.;
-    /          / /      ^  /
-    /          / /         /
-    /          / /         /
-    /_,.--:^-._/ /         /
-    ^           ^¨¨-.___.:^";
 
-
-    let tile=Paragraph::new(text)
+    let tile=Paragraph::new(configuration::ASCII_ART)
         .block(Block::default()
             .title_alignment(Alignment::Center)
 

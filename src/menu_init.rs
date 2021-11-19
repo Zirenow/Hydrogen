@@ -19,25 +19,31 @@ pub fn init_menu()->Result<(),io::Error> {
 
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
-    let app_name="Hydrogen-indev";
-    let exit_key:char='k';
-
 
     loop {
         terminal.draw(|f| {
             let row=Layout::default()
                 .direction(Direction::Horizontal)
-                .margin(1)
+                .margin(configuration::MARGINS)
                 .constraints(
                     [
-                        Constraint::Percentage(50),
-                        Constraint::Percentage(50),
+                        Constraint::Percentage(60),
+                        Constraint::Percentage(40),
                         Constraint::Percentage(0)
                     ].as_ref()
                 )
                 .split(f.size());
+            let minibar=Layout::default()
+                .direction(Direction::Vertical)
+                .margin(configuration::MARGINS)
+                .constraints(
+                    [
+                        Constraint::Percentage(60),
+                        Constraint::Percentage(40),
+                    ].as_ref()
+                )
+                .split(f.size());
 
-            //f.render_widget(tiles::usage_tile(), row[0]);
             f.render_widget(tiles::text_tile(),row[1]);
             f.render_widget(tiles::ascii_tile(),row[0]);
         });
