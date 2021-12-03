@@ -1,10 +1,10 @@
-use tui::widgets::{Wrap,Paragraph,Block,Borders, Sparkline, Chart,Dataset, Axis, GraphType};
+use tui::widgets::{Wrap,Paragraph,Block,Borders};
 use tui::layout::Alignment;
 use tui::style::{Style,Color, Modifier};
 use tui::text::{Spans, Span};
 use tui::symbols;
 use crate::configuration;
-use sysinfo::{ProcessorExt,System, SystemExt, Disk};
+use sysinfo::{ProcessorExt,System, SystemExt, Disk, Processor};
 
 static MAGABYTE:u64=1024;
 pub struct ColorScheme{
@@ -13,20 +13,31 @@ pub struct ColorScheme{
     pub foreground_color2:Color,
     pub background_color2:Color
 }
+impl ColorScheme{
+    pub fn as_label_style(&self)->Style{
+        Style::default()
+            .fg(self.foreground_color1)
+            .bg(self.background_color1)
+    }
+    pub fn as_value_style(&self)->Style{
+        Style::default()
+            .fg(self.foreground_color2)
+            .bg(self.background_color2)
+    }
+}
 pub fn text_tile()->Paragraph<'static>{
     let mut sys=System::new_all();
 
-    let label_style=Style::default()
-        .fg(configuration::USER_THEME.foreground_color1)
-        .bg(configuration::USER_THEME.background_color1);
-    let value_style=Style::default()
-        .fg(configuration::USER_THEME.foreground_color2)
-        .bg(configuration::USER_THEME.background_color2);
+    let label_style=configuration::USER_THEME.as_label_style();
+        
+    let value_style=configuration::USER_THEME.as_value_style();
 
     let usage= sys.used_memory();
     let total=sys.total_memory();
+    
+   
     sys.refresh_system();
-
+    let voo =sys.global_processor_info().cpu_usage();
 
     let os_block=vec![
         Spans::from(vec![
@@ -72,17 +83,23 @@ pub fn text_tile()->Paragraph<'static>{
         Spans::from(vec![
             Span::styled("",label_style),
         ]),
+        
+        Spans::from(vec![
+            Span::styled("CPU: ",label_style),
+            Span::styled(format!("{}",sys.global_processor_info().brand()),value_style)
+        ]),
         Spans::from(vec![
             Span::styled("Logical CPU's: ",label_style),
             Span::styled(format!("{}",sys.processors().len()),value_style)
         ]),
         Spans::from(vec![
-            Span::styled("Global CPU usage: ",label_style),
+            Span::styled("CPU usage: ",label_style),
             Span::styled(format!("{:.2} %",sys.global_processor_info().cpu_usage()),value_style)
         ]),
         Spans::from(vec![
             Span::styled("Number of cores: ",label_style),
             Span::styled(format!("{:?}",sys.physical_core_count().unwrap()),value_style)
+            
         ]),
 
     ];
@@ -121,5 +138,6 @@ pub fn ascii_tile()->Paragraph<'static>{
             .title_alignment(Alignment::Center)
 
             .borders(Borders::ALL)) .alignment(Alignment::Center);
+        
     return tile;
 }
