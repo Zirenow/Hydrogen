@@ -5,4 +5,5 @@ mod configuration;
 
 fn main() {
     menu_init::init_menu();
+   
 }

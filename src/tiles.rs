@@ -1,10 +1,9 @@
 use tui::widgets::{Wrap,Paragraph,Block,Borders};
 use tui::layout::Alignment;
-use tui::style::{Style,Color, Modifier};
+use tui::style::{Style,Color};
 use tui::text::{Spans, Span};
-use tui::symbols;
 use crate::configuration;
-use sysinfo::{ProcessorExt,System, SystemExt, Disk, Processor};
+use sysinfo::{ProcessorExt,System, SystemExt};
 
 static MAGABYTE:u64=1024;
 pub struct ColorScheme{
@@ -13,6 +12,8 @@ pub struct ColorScheme{
     pub foreground_color2:Color,
     pub background_color2:Color
 }
+
+
 impl ColorScheme{
     pub fn as_label_style(&self)->Style{
         Style::default()
@@ -25,6 +26,7 @@ impl ColorScheme{
             .bg(self.background_color2)
     }
 }
+
 pub fn text_tile()->Paragraph<'static>{
     let mut sys=System::new_all();
 
@@ -32,12 +34,11 @@ pub fn text_tile()->Paragraph<'static>{
         
     let value_style=configuration::USER_THEME.as_value_style();
 
-    let usage= sys.used_memory();
-    let total=sys.total_memory();
+    
     
    
     sys.refresh_system();
-    let voo =sys.global_processor_info().cpu_usage();
+    
 
     let os_block=vec![
         Spans::from(vec![
@@ -117,15 +118,16 @@ pub fn text_tile()->Paragraph<'static>{
             .block(Block::default()
                 .title(title)
                 .title_alignment(Alignment::Center)
-                .borders(Borders::ALL))
-            //.alignment(Alignment::Center)
+                .borders(if configuration::SHOW_BORDERS==true{Borders::ALL} 
+                         else{Borders::NONE}))
             .wrap(Wrap { trim: true });
             return tile;
     }
     else {
         let tile=Paragraph::new(os_block)
         .block(Block::default()
-            .borders(Borders::ALL))
+            .borders(if configuration::SHOW_BORDERS==true{Borders::ALL}
+                     else{Borders::NONE}))
 
         .wrap(Wrap { trim: true });
         return tile; }
@@ -136,8 +138,10 @@ pub fn ascii_tile()->Paragraph<'static>{
     let tile=Paragraph::new(configuration::ASCII_ART)
         .block(Block::default()
             .title_alignment(Alignment::Center)
-
-            .borders(Borders::ALL)) .alignment(Alignment::Center);
+           
+            .borders(if configuration::SHOW_BORDERS==true{Borders::ALL}
+                     else{Borders::NONE}))
+                .alignment(Alignment::Center);
         
     return tile;
 }
