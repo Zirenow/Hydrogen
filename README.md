@@ -20,12 +20,16 @@ Figure out how to set it up on your platform
 `cd (path to repository)`  
 
 `cargo build` if you want to **just compile**   
-`cargo run`   if you want to **compile and run** the binary   
+`cargo build --release` if you want to **compile optimized** binary   
+`cargo run`   if you want to **compile and run** the binary      
+
+[cargo guide](https://doc.rust-lang.org/stable/cargo/commands/build-commands.html)
 #### 3.Install
 
 After compilation directory named ***target*** should be geneated by the compiler.   
 It contains our compiled binary and some cache.   
-Navigate to ***target/debug*** and copy binary file where you want
+Navigate to ***target/debug*** or ***target/release***  and copy binary file where you want.   
+You can also delete ***target*** directory by doing `cargo clean`.
 </details>   
 
 ## Configuration 🔧
