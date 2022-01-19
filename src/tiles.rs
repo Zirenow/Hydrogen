@@ -3,8 +3,8 @@ use tui::layout::Alignment;
 use tui::style::{Style,Color};
 use tui::text::{Spans, Span};
 use crate::configuration;
-use sysinfo::{ProcessorExt,System, SystemExt};
-
+use sysinfo::{ProcessExt,ProcessorExt,System, SystemExt};
+use std::collections::HashMap;
 static MAGABYTE:u64=1024;
 pub struct ColorScheme{
     pub foreground_color1:Color,
@@ -27,8 +27,8 @@ impl ColorScheme{
     }
 }
 
-pub fn text_tile()->Paragraph<'static>{
-    let mut sys=System::new_all();
+pub fn text_tile(sys:&System)->Paragraph<'static>{
+    //let mut sys=System::new_all();
 
     let label_style=configuration::USER_THEME.as_label_style();
         
@@ -37,7 +37,7 @@ pub fn text_tile()->Paragraph<'static>{
     
     
    
-    sys.refresh_system();
+    //sys.refresh_system();
     
 
     let os_block=vec![
@@ -133,6 +133,7 @@ pub fn text_tile()->Paragraph<'static>{
         return tile; }
 
 }
+
 pub fn ascii_tile()->Paragraph<'static>{
 
     let tile=Paragraph::new(configuration::ASCII_ART)
@@ -142,6 +143,29 @@ pub fn ascii_tile()->Paragraph<'static>{
             .borders(if configuration::SHOW_BORDERS==true{Borders::ALL}
                      else{Borders::NONE}))
                 .alignment(Alignment::Center);
+                
         
     return tile;
+}
+
+
+pub fn proc_tile(base:&System)->Paragraph<'static>{
+   
+    let mut data:Vec<Spans> = Vec::new();
+
+    for (pid, proc) in base.processes(){
+        data.push(Spans::from(vec![
+            Span::styled("PID:",                    configuration::USER_THEME.as_label_style()),
+            Span::styled(format!("{} ",pid),        configuration::USER_THEME.as_value_style()),
+            Span::styled("Name: ",                  configuration::USER_THEME.as_label_style()),
+            Span::styled(format!("{}",proc.name()), configuration::USER_THEME.as_value_style())
+        ]));
+        
+    }
+    Paragraph::new(data)
+        .block(Block::default()
+        .borders(if configuration::SHOW_BORDERS==true{Borders::ALL}
+                 else{Borders::NONE}))
+        .alignment(Alignment::Left)
+        
 }

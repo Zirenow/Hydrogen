@@ -4,6 +4,6 @@ mod configuration;
 
 
 fn main() {
-    menu_init::init_menu();
+   menu_init::init_menu();
    
 }

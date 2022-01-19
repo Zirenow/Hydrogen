@@ -1,11 +1,12 @@
 use std::io;
+use std::{thread,time};
 use tui::Terminal;
 use tui::backend::CrosstermBackend;
 use tui::layout::{Layout, Constraint, Direction};
 use crossterm::event::{read, Event, KeyCode};
 use crossterm::terminal;
 use crossterm::execute;
-
+use sysinfo::{ProcessExt,ProcessorExt,System, SystemExt};
 use crate::tiles;
 use crate::configuration;
 pub fn init_menu()->Result<(),io::Error> {
@@ -16,8 +17,9 @@ pub fn init_menu()->Result<(),io::Error> {
 
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
-
+    //let mut data=System::new_all();
     'mainloop:loop {
+       
         terminal.draw(|f| {
             let row=Layout::default()
                 .direction(Direction::Horizontal)
@@ -31,15 +33,19 @@ pub fn init_menu()->Result<(),io::Error> {
                 )
                 .split(f.size());
 
-            f.render_widget(tiles::text_tile(),row[1]);
-            f.render_widget(tiles::ascii_tile(),row[0]);
+            let mut data=System::new_all(); /* Yes, this is bad for memory but it's working */
+
+            f.render_widget(tiles::text_tile(&data),row[1]);
+            f.render_widget(tiles::proc_tile(&data),row[0]);
+
+            data.refresh_system();
+            
+
+            thread::sleep(time::Duration::from_secs(1));
+
+
         });
-        let event = read()?;
-        if event == Event::Key(KeyCode::Char(configuration::QUIT_KEY).into()) {
-            break 'mainloop;
-        }
-       
-       
+        
     }
     Ok(())
     
