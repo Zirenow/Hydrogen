@@ -1,5 +1,5 @@
-use tui::widgets::{Wrap,Paragraph,Block,Borders};
-use tui::layout::Alignment;
+use tui::widgets::{Wrap,Paragraph,Block,Borders,Table,Row};
+use tui::layout::{Alignment,Constraint};
 use tui::style::{Style,Color};
 use tui::text::{Spans, Span};
 use crate::configuration;
@@ -147,25 +147,26 @@ pub fn ascii_tile()->Paragraph<'static>{
         
     return tile;
 }
-
-
-pub fn proc_tile(base:&System)->Paragraph<'static>{
-   
-    let mut data:Vec<Spans> = Vec::new();
-
-    for (pid, proc) in base.processes(){
-        data.push(Spans::from(vec![
-            Span::styled("PID:",                    configuration::USER_THEME.as_label_style()),
-            Span::styled(format!("{} ",pid),        configuration::USER_THEME.as_value_style()),
-            Span::styled("Name: ",                  configuration::USER_THEME.as_label_style()),
-            Span::styled(format!("{}",proc.name()), configuration::USER_THEME.as_value_style())
-        ]));
-        
+pub fn formatted_proc_tile(base:&System)->Table{
+    let mut proc_table:Vec<Row>=Vec::new();
+    for (pid,proc) in base.processes(){
+        proc_table.push( Row::new(vec![
+            format!("{}",pid),
+            format!("{}",proc.name()),
+            format!("{}",proc.status()),
+            format!("{} Mb",proc.memory()/MAGABYTE),
+            format!("{}",proc.cpu_usage()*100.0)
+        ])      .style(Style::default().fg(Color::Blue)));
     }
-    Paragraph::new(data)
+    Table::new(proc_table)
         .block(Block::default()
         .borders(if configuration::SHOW_BORDERS==true{Borders::ALL}
-                 else{Borders::NONE}))
-        .alignment(Alignment::Left)
+            else{Borders::NONE}))
+
+        .column_spacing(2)
+        .widths(&[Constraint::Length(5), Constraint::Length(15), Constraint::Length(10),Constraint::Length(15),Constraint::Length(5)])
+        .header(Row::new(vec!["PID","Name","Status","Memory (Mb)","CPU %"])
+            .style(Style::default().bg(Color::Cyan).fg(Color::Blue))
+            .bottom_margin(1))
         
 }

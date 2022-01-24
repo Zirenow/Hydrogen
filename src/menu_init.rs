@@ -11,7 +11,7 @@ use crate::tiles;
 use crate::configuration;
 pub fn init_menu()->Result<(),io::Error> {
 
-
+   
     let mut stdout = io::stdout();
     execute!(stdout,terminal::Clear(terminal::ClearType::All))?;
 
@@ -32,13 +32,14 @@ pub fn init_menu()->Result<(),io::Error> {
                     ].as_ref()
                 )
                 .split(f.size());
-
+            
             let mut data=System::new_all(); /* Yes, this is bad for memory but it's working */
 
             f.render_widget(tiles::text_tile(&data),row[1]);
-            f.render_widget(tiles::proc_tile(&data),row[0]);
-
-            data.refresh_system();
+            f.render_widget(tiles::formatted_proc_tile(&data),row[0]);
+            
+           // data.refresh_processes();
+            //data.refresh_all();
             
 
             thread::sleep(time::Duration::from_secs(1));
@@ -50,3 +51,6 @@ pub fn init_menu()->Result<(),io::Error> {
     Ok(())
     
 }
+/* SUMMARY 23.01.22 */
+/* Program has strangely long execution time and must be killed with CTRL+C
+Memory usage is around 12 Mb which is too much for cmd application */

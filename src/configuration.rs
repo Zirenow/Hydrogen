@@ -7,9 +7,9 @@ pub static QUIT_KEY:char    ='k'; //currently A - Z keys are supported
 
 pub static SHOW_TITLES:bool = false; //if you want titles or not
 
-pub static SHOW_BORDERS:bool = false;  //if you want borders or not
+pub static SHOW_BORDERS:bool = true;  //if you want borders or not
 
-pub static MARGINS:u16=2;
+pub static MARGINS:u16=1;
 
 /* customize your colors (visit https://docs.rs/tui/0.16.0/tui/style/enum.Color.html if you need help) */
 pub static USER_THEME:tiles::ColorScheme=tiles::ColorScheme{
