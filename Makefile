@@ -8,7 +8,7 @@ run:
 clean:
 	cargo clean 
 
-install:
+install_windows:
 	cargo install --path $(CURDIR)
 
 install_linux:
