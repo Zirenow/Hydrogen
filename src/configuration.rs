@@ -9,6 +9,12 @@ pub static SHOW_TITLES:bool = false; //if you want titles or not
 
 pub static SHOW_BORDERS:bool = true;  //if you want borders or not
 
+/* 
+It's an enum with two states: Normal and Extended
+Use Mode::Extended if you want to have process list instead of Ascii logo
+*/
+pub static APPLICATION_MODE:tiles::Mode = tiles::Mode::Extended;
+
 pub static MARGINS:u16=1;
 
 /* customize your colors (visit https://docs.rs/tui/0.16.0/tui/style/enum.Color.html if you need help) */

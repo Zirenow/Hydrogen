@@ -34,9 +34,18 @@ pub fn init_menu()->Result<(),io::Error> {
                 .split(f.size());
             
             let mut data=System::new_all(); /* Yes, this is bad for memory but it's working */
+            
 
             f.render_widget(tiles::text_tile(&data),row[1]);
-            f.render_widget(tiles::formatted_proc_tile(&data),row[0]);
+            
+            if configuration::APPLICATION_MODE==tiles::Mode::Extended
+            {
+                f.render_widget(tiles::formatted_proc_tile(&data),row[0]);
+            }
+            else
+            {
+                f.render_widget(tiles::ascii_tile(),row[0]);
+            }
             
            // data.refresh_processes();
             //data.refresh_all();

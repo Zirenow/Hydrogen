@@ -12,6 +12,11 @@ pub struct ColorScheme{
     pub foreground_color2:Color,
     pub background_color2:Color
 }
+#[derive(PartialEq, Eq)]
+pub enum Mode{
+    Normal,
+    Extended
+}
 
 
 impl ColorScheme{
