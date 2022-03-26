@@ -2,7 +2,7 @@
 Simple TUI app that that shows system and hardware information
 Inspired by popular [neofetch](https://github.com/dylanaraps/neofetch)    
 
-![thumbnail](hydrogen_logo.PNG)
+![thumbnail](hydrogen_logo.png)
 
 ## Features ⭐
 - TUI interface
