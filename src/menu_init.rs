@@ -47,15 +47,17 @@ pub fn init_menu()->Result<(),io::Error> {
                 f.render_widget(tiles::ascii_tile(),row[0]);
             }
             
-           // data.refresh_processes();
-            //data.refresh_all();
+           
             
 
             thread::sleep(time::Duration::from_secs(1));
-
-
+           
         });
-        
+        if configuration::EXIT_AFTER_EXECUTION==true{
+            break;
+        }else {
+            continue;
+        }
     }
     Ok(())
     
